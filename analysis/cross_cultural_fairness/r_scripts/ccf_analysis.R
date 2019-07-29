@@ -10,9 +10,15 @@ library(corrplot)
 rm(list=ls())
 
 # Read and prepare data
-usa_data <- read.csv('/Volumes/decetylab/lab_members/kozloff/analysis/cross_cultural_fairness/data/clean_data/usa_behavioral_task_data.csv')
+#usa_data <- read.csv('/Volumes/decetylab/lab_members/kozloff/decetylab/analysis/cross_cultural_fairness/data/clean_data/usa_behavioral_task_data.csv')
+usa_data <- read.csv('/Volumes/decetylab/lab_members/kozloff/decetylab/analysis/cross_cultural_fairness/data/clean_data/usa_combined_data.csv')
+
+# Remove outliers
 usa_data <- usa_data[which(!is.na(usa_data$child_gender)),]
 usa_data <- usa_data[which(usa_data$age_years<9),]
+usa_data <- usa_data[which(usa_data$Subject!=146),]
+
+# Correct data types
 usa_data$age_years <- as.factor(usa_data$age_years)
 usa_data$wealth_poor<-as.numeric(usa_data$wealth_poor)
 usa_data$merit_lazy<-as.numeric(usa_data$merit_lazy)
@@ -21,7 +27,6 @@ usa_data$dictator_stickers_shared<-as.numeric(usa_data$dictator_stickers_shared)
 usa_data$dictator_stickers_shared<-as.numeric(usa_data$dictator_stickers_shared)
 usa_data$child_gender[which(usa_data$child_gender==1)]<-"gender1"
 usa_data$child_gender[which(usa_data$child_gender==2)]<-"gender2"
-usa_data <- usa_data[which(usa_data$Subject!=146),]
 
 
 # Dictator game by age and gender
@@ -30,10 +35,10 @@ summary(dictator_anova)
 
 # Without outliers
 # Df Sum Sq Mean Sq F value   Pr(>F)    
-# age_years                4  177.1   44.28   7.133 4.04e-05 ***
-#   child_gender             1   34.7   34.71   5.592   0.0199 *  
-#   age_years:child_gender   4   54.7   13.68   2.204   0.0735 .  
-# Residuals              105  651.8    6.21                     
+# age_years                4  180.0   44.99   7.184 3.79e-05 ***
+#   child_gender             1   33.2   33.23   5.307   0.0232 *  
+#   age_years:child_gender   4   53.8   13.46   2.149   0.0800 .  
+# Residuals              104  651.3    6.26                     
 # ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
@@ -60,12 +65,12 @@ data_summary <- function(data, varname, groupnames){
 }
 
 dictator_summary <- data_summary(usa_data, varname="dictator_stickers_shared", 
-                    groupnames=c("child_gender", "age_years"))
+                                 groupnames=c("child_gender", "age_years"))
 head(dictator_summary)
 
 
 ggplot(dictator_summary, aes(x=age_years, y=dictator_stickers_shared, group=child_gender, color=child_gender)) + 
-# geom_errorbar(aes(ymin=dictator_stickers_shared-sd, ymax=dictator_stickers_shared+sd), width=.1) +
+  # geom_errorbar(aes(ymin=dictator_stickers_shared-sd, ymax=dictator_stickers_shared+sd), width=.1) +
   geom_line() + geom_point()+
   scale_color_brewer(palette="Paired")+theme_minimal() +
   xlab("Age (years)") + ylab("Number stickers") +
@@ -83,14 +88,13 @@ summary(hurt_anova)
 
 # Without outliers:
 # Df Sum Sq Mean Sq F value Pr(>F)
-# age_years                4   2.68  0.6693   0.972  0.426
-# child_gender             1   0.25  0.2521   0.366  0.546
-# age_years:child_gender   4   1.99  0.4976   0.723  0.578
-# Residuals              105  72.26  0.6882               
-
+# age_years                4   2.80  0.6996   1.011  0.405
+# child_gender             1   0.29  0.2931   0.424  0.517
+# age_years:child_gender   4   2.08  0.5206   0.752  0.559
+# Residuals              104  71.95  0.6918   
 
 empathy_hurt_summary <- data_summary(usa_data, varname="empathy_hurt", 
-                                 groupnames=c("child_gender", "age_years"))
+                                     groupnames=c("child_gender", "age_years"))
 head(empathy_hurt_summary)
 
 
@@ -117,15 +121,15 @@ summary(wealth_anova)
 
 # Without outliers:
 # Df Sum Sq Mean Sq F value Pr(>F)  
-# age_years                4   6.14  1.5345   3.152 0.0172 *
-#   child_gender             1   0.08  0.0787   0.162 0.6885  
-# age_years:child_gender   4   1.75  0.4385   0.900 0.4666  
-# Residuals              105  51.12  0.4869                 
+# age_years                4   6.15  1.5374   3.137 0.0176 *
+#   child_gender             1   0.06  0.0634   0.129 0.7199  
+# age_years:child_gender   4   1.81  0.4534   0.925 0.4524  
+# Residuals              104  50.96  0.4900                 
 # ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 wealth_poor_summary <- data_summary(usa_data, varname="wealth_poor", 
-                                     groupnames=c("child_gender", "age_years"))
+                                    groupnames=c("child_gender", "age_years"))
 head(wealth_poor_summary)
 
 
@@ -147,24 +151,15 @@ merit_anova = aov(merit_lazy~age_years*child_gender,data =usa_data)
 summary(merit_anova)
 
 # Df Sum Sq Mean Sq F value   Pr(>F)    
-# age_years                4  17.57   4.393   6.469 0.000108 ***
-#   child_gender             1   0.01   0.008   0.011 0.915474    
-# age_years:child_gender   4   1.53   0.381   0.562 0.691070    
-# Residuals              105  71.30   0.679                     
+# age_years                4  17.88   4.471   6.639 8.47e-05 ***
+#   child_gender             1   0.00   0.000   0.000    0.998    
+# age_years:child_gender   4   1.83   0.458   0.680    0.608    
+# Residuals              104  70.04   0.673                     
 # ---
 #   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
-# Distributive justice (wealth) by age
-# age_wealth_corr<-cor.test(usa_data$age_years,usa_data$wealth_poor)
-# age_wealth_corr
-
-# Distributive justice (merit) by age
-# age_merit_corr<-cor.test(usa_data$age_years,usa_data$merit_lazy)
-# age_merit_corr
-
-
 merit_lazy_summary <- data_summary(usa_data, varname="merit_lazy", 
-                                     groupnames=c("child_gender", "age_years"))
+                                   groupnames=c("child_gender", "age_years"))
 head(merit_lazy_summary)
 
 
@@ -181,63 +176,62 @@ ggplot(merit_lazy_summary, aes(x=age_years, y=merit_lazy, group=child_gender, co
         legend.text = element_text(size=12))
 
 
-
-
-
 # Pearson's correlations
 usa_data$age_years<- as.numeric(usa_data$age_years)
 
 
 # Test correlations
-
 cor.test(usa_data$age_years, usa_data$dictator_stickers_shared)
 # Pearson's product-moment correlation
 # 
+# Pearson's product-moment correlation
+# 
 # data:  usa_data$age_years and usa_data$dictator_stickers_shared
-# t = 4.5111, df = 113, p-value = 1.587e-05
+# t = 4.5103, df = 112, p-value = 1.603e-05
 # alternative hypothesis: true correlation is not equal to 0
 # 95 percent confidence interval:
-#  0.2235293 0.5354582
+#  0.2243256 0.5372412
 # sample estimates:
 #       cor 
-# 0.3906502 
+# 0.3920651 
 
 cor.test(usa_data$age_years, usa_data$wealth_poor)
 # Pearson's product-moment correlation
 # 
 # data:  usa_data$age_years and usa_data$wealth_poor
-# t = 2.4294, df = 113, p-value = 0.0167
+# t = 2.3936, df = 112, p-value = 0.01835
 # alternative hypothesis: true correlation is not equal to 0
 # 95 percent confidence interval:
-#  0.04137224 0.38999510
+#  0.03823994 0.38874579
 # sample estimates:
 #       cor 
-# 0.2227949
+# 0.2206033
 
 cor.test(usa_data$age_years, usa_data$merit_lazy)
 
 # Pearson's product-moment correlation
+# Pearson's product-moment correlation
 # 
 # data:  usa_data$age_years and usa_data$merit_lazy
-# t = -4.8235, df = 113, p-value = 4.442e-06
+# t = -4.9204, df = 112, p-value = 2.991e-06
 # alternative hypothesis: true correlation is not equal to 0
 # 95 percent confidence interval:
-#  -0.5543711 -0.2489297
+#  -0.5619382 -0.2576580
 # sample estimates:
 #        cor 
-# -0.4132056 
+# -0.4215947 
 
-cor.test(usa_data$wealth_poor, usa_data$empathy)
+cor.test(usa_data$wealth_poor, usa_data$merit_lazy)
 # Pearson's product-moment correlation
 # 
 # data:  usa_data$wealth_poor and usa_data$merit_lazy
-# t = -2.3223, df = 113, p-value = 0.02201
+# t = -2.3635, df = 112, p-value = 0.01983
 # alternative hypothesis: true correlation is not equal to 0
 # 95 percent confidence interval:
-#  -0.38162919 -0.03155632
+#  -0.38638396 -0.03546441
 # sample estimates:
 #        cor 
-# -0.2134335 
+# -0.2179576 
 
 
 
