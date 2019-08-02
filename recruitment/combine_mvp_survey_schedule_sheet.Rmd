@@ -1,0 +1,131 @@
+---
+title: "Combine Schedule Sheet and Online Survey DOD"
+output: html_notebook
+author: Violet Kozloff
+created: August 2nd, 2019
+# Adapted from IssueScoring.Rmd by Keith Yoder
+---
+
+``` {r code}
+
+# Load required packages ####
+require('tidyr')
+require('dplyr')
+## Load dependencies ####
+if (!require('openxlsx')) install.packages('openxlsx')
+library('openxlsx')
+
+# Get operating system ####
+get_os <- function(){
+  sysinf <- Sys.info()
+  if (!is.null(sysinf)){
+    os <- sysinf['sysname']
+    if (os == 'Darwin')
+      os <- "osx"
+  } else { ## mystery machine
+    os <- .Platform$OS.type
+    if (grepl("^darwin", R.version$os))
+      os <- "osx"
+    if (grepl("linux-gnu", R.version$os))
+      os <- "linux"
+  }
+  tolower(os)
+}
+
+# Check os version to determine base file path
+cur_os = get_os()
+if (cur_os == 'osx') {
+  root_dir = '/Volumes/decetylab/projects/research/MVP/'
+} else if (cur_os == 'windows' ) {
+  root_dir = 'z:/projects/research/MVP/'
+} else {
+  root_dir = '/labs/decetylab/projects/research/MVP/'
+}
+
+
+# build path to Online Survey CSV file ####
+survey_file = paste0(root_dir, 'Qualtrics/Online_Survey_DOD.csv')
+survey_data = read.csv(survey_file, skip = 1, header = TRUE)
+
+
+# Extract and rename relevant survey columns####
+
+survey_columns = survey_data %>% select('ResponseID', Name = 'Enter.your.full.name.')
+
+# Build path to Schedule XLSX file ####
+schedule_file = paste0(root_dir, 'Scheduling/Schedule Sheet.xlsx')
+
+# Extract and rename relevant schedule sheet columns####
+
+# Helper function to read XLSX file
+# From https://stackoverflow.com/questions/12945687/read-all-worksheets-in-an-excel-workbook-into-an-r-list-with-data-frames
+library(readxl)    
+read_excel_allsheets <- function(filename, tibble = FALSE) {
+    # I prefer straight data.frames
+    # but if you like tidyverse tibbles (the default with read_excel)
+    # then just pass tibble = TRUE
+    sheets <- readxl::excel_sheets(filename)
+    x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+    if(!tibble) x <- lapply(x, as.data.frame)
+    names(x) <- sheets
+    x
+}
+
+schedule_data <- read_excel_allsheets(schedule_file)
+showed <- schedule_data$Showed
+colnames(showed)[colnames(showed)=="ID Number"] <- "id_number"
+
+
+# Combine survey data and schedule data ####
+
+updated_schedule <- merge(showed, survey_columns, by.y = "Name", sort = FALSE, all.x = TRUE)
+
+
+
+# Remove duplicate survey responses based on ID Number ####
+updated_schedule <- updated_schedule[!duplicated(updated_schedule$id_number), ]
+
+# Identify anyone who came multiple times for the same study
+came_twice <- updated_schedule[duplicated(updated_schedule$Name), ]
+
+# Update schedule with new Showed sheet####
+schedule_data$Showed <- updated_schedule
+
+
+
+# Save new Schedule workbook with updated Showed sheet####
+
+## Split data apart by a grouping variable;
+##   makes a named list of tables
+#dat <- split(mtcars, mtcars$cyl)
+#dat
+ 
+ 
+## Create a blank workbook
+wb <- createWorkbook()
+ 
+## Loop through the list of split tables as well as their names
+##   and add each one as a sheet to the workbook
+Map(function(data, name){
+ 
+    addWorksheet(wb, name)
+    writeData(wb, name, data)
+ 
+}, schedule_data, names(schedule_data))
+ 
+ 
+## Save workbook to working directory
+saveWorkbook(wb, file = "test_schedule_sheet.xlsx", overwrite = TRUE)
+
+
+```
+
+
+# TO DO:
+# Check that same numbers of lines in output and input
+# When complete, highlight top lines in yellow and change date format to "short date"
+# Needs to also include legacy-exported responses from the new qualtrics survey
+# Understand/ standardize "load dependencies"
+# Fix weird sorting
+# Write to server
+
