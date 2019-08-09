@@ -8,14 +8,9 @@ created: August 2nd, 2019
 
 ``` {r code}
 
-# Clear workspace ####
-
-rm (list = ls())
-
 # Load required packages ####
 require('tidyr')
 require('dplyr')
-require('gtools')
 ## Load dependencies ####
 if (!require('openxlsx')) install.packages('openxlsx')
 library('openxlsx')
@@ -56,24 +51,13 @@ new_survey_file = paste0(root_dir, 'lab_members/kozloff/projects/mvp/recruitment
 new_survey_data = read.csv(new_survey_file, skip = 1, header = TRUE)
 
 
-# Build paths to sheet listing MVP Study IDs and MVP Qualtrics Response IDs ####
-mvp_id_file = paste0(root_dir, 'lab_members/kozloff/projects/mvp/recruitment/mvp_id.csv')
-mvp_id_data = read.csv(mvp_id_file)
+# Extract, combine, and rename relevant survey columns####
+
+survey_columns = rbind((old_survey_data %>% select('ResponseID', Name = 'Enter.your.full.name.', Email = 'Enter.your.email.address.')), (new_survey_data %>% select('ResponseID', Name = 'Enter.your.full.name.', Email = 'Enter.your.email.address.')))
 
 
 # Build path to Schedule XLSX file ####
 schedule_file = paste0(root_dir, 'projects/research/MVP/Scheduling/Schedule Sheet.xlsx')
-
-# Build path to Call Notes XLSX file ####
-call_notes_file = paste0(root_dir, 'projects/research/MVP/Scheduling/Call Notes.xlsx')
-
-
-# Combine 2 Online Survey CSV files ####
-survey_data <- smartbind(old_survey_data, new_survey_data)
-
-
-colnames(survey_data)[colnames(survey_data)=="Name"] <- "Anonymous"
-
 
 # Extract and rename relevant schedule sheet columns####
 
@@ -92,55 +76,66 @@ read_excel_allsheets <- function(filename, tibble = FALSE) {
 }
 
 schedule_data <- read_excel_allsheets(schedule_file)
-colnames(schedule_data$Showed)[colnames(schedule_data$Showed)=="ID Number"] <- "SubjectID"
-colnames(schedule_data$Showed)[colnames(schedule_data$Showed)=="Date of Appointment...4"] <- "date_of_appointment"
-showed <- schedule_data$Showed %>%  select(Name, SubjectID, date_of_appointment)
-
-
-# Extract and rename relevant schedule sheet columns####
-call_notes <- read_excel_allsheets(call_notes_file)$Sheet1
-colnames(call_notes)[colnames(call_notes)=="Phone #"] <- "phone"
-call_notes <- call_notes %>%  select(Name, Email, phone)
-
-
-# Find new participants and pull their emails from the schedule sheet ####
-new_participants <- showed[which(! showed$SubjectID %in% mvp_id_data$SubjectID),]
-
-new_participants <- merge (new_participants, call_notes, all.x=TRUE, by = "Name")
-
-
-
-library(stringr)
-
-
-colnames(survey_data)[colnames(survey_data)=="Enter.your.full.name."] <- "Name"
-survey_data <- rename (survey_data, V1 = ResponseID, V2 = ResponseSet, V3 = Anonymous, V4 = ExternalDataReference, V5 = EmailAddress, V6 = IPAddress, V7 = Status, V8 = StartDate, V9 = EndDate, V10 = Finished)
-
-new_participants$first_name <- tolower(word(new_participants$Name, 1))
-new_participants$last_name <- tolower(word(new_participants$Name, -1))
-survey_data$first_name <- tolower(word(survey_data$Name, 1))
-survey_data$last_name <- tolower(word(survey_data$Name, -1))
-survey_data <- merge(new_participants, survey_data, by = c("first_name", "last_name"), all.x = TRUE)
-
-colnames(survey_data)[colnames(survey_data)=="Enter.your.email.address."] <- "Email"
+showed <- schedule_data$Showed
+colnames(showed)[colnames(showed)=="ID Number"] <- "id_number"
 
 
 
 
-# Second Approach
-no_survey_response <- survey_data [which(is.na(survey_data$V1)),]
 
-test <- (no_survey_response[which(no_survey_response$Email %in% survey_data$Email & !is.na(no_survey_response$Email)),])
+# Combine survey data and schedule data ####
 
+updated_schedule <- merge(showed, survey_columns, by.y = "Name", sort = FALSE, all.x = TRUE)
+
+
+# Remove duplicate survey responses based on ID Number ####
+updated_schedule <- updated_schedule[!duplicated(updated_schedule$id_number), ]
+
+# Identify anyone who came multiple times for the same study
+visited_twice <- updated_schedule[duplicated(updated_schedule$Name), ]
+
+# Update schedule with new Showed sheet####
+schedule_data$Showed <- updated_schedule
+
+
+
+# Save new Schedule workbook with updated Showed sheet####
+ 
+## Create a blank workbook
+wb <- createWorkbook()
+ 
+## Loop through the list of split tables as well as their names
+##   and add each one as a sheet to the workbook
+Map(function(data, name){
+ 
+    addWorksheet(wb, name)
+    writeData(wb, name, data)
+ 
+}, schedule_data, names(schedule_data))
+ 
+ 
+## Save workbook to working directory
+saveWorkbook(wb, file = "test_schedule_sheet.xlsx", overwrite = TRUE)
 
 
 ```
 
 
 # TO DO:
-# Make sure no sorting
+# Undo weird sort
+# Use just the first complete survey entry for each name
+#     Separate completes from incompletes
+#     Find first complete
+#     If no complete, first incomplete?
+# Build in a check that alerts what MVP #s are duplicates (print to console)
+#     Put duplicate IDs on a post-it for Keith
+# Review with Keith the ppl with no Qualtrics responses
+#     Check if they have another name listed?
+#     Are they somewhere else (ie. in the first survey but not the output CSV?)
+# Check that same numbers of lines in output and input
 # Understand/ standardize "load dependencies"
-# Write output
+# Write to server
+# When complete, highlight top lines in yellow and change date format to "short date"
 # Create variable listing anyone who filled out the survey but didn't come to the lab AND gave us an email address
 #      Hand check this
 
