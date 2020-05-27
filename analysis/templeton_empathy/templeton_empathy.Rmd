@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "Templeton Empathy Analysis"
 output:
   html_document: default
   pdf_document: default
@@ -10,90 +10,24 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Set Up
-#### Set up workspace
-*Read, reformat, and recode data. Mean center the responses and add Hofstede individualism-collectivism score. Write the output into a clean csv file ("templeton_empathy_clean_data.csv)*
-
-# ```{r, echo = FALSE, results = FALSE,message=FALSE}
-# # install.packages("tidyverse", "corrplot", "ggcorrplot", "lme4", "mediation", "here")
-# require(tidyverse)
-# require(sjstats)
-# require(sjPlot)
-# require(lmerTest)
-# require(mediation)
-# require(here)
-# # Clear workspace
-# rm(list=ls())
-# 
-# # Helper function to detect operating system
-# get_os <- function(){
-#   sysinf <- Sys.info()
-#   if (!is.null(sysinf)){
-#     os <- sysinf['sysname']
-#     if (os == 'Darwin')
-#       os <- "osx"
-#   } else { ## mystery machine
-#     os <- .Platform$OS.type
-#     if (grepl("^darwin", R.version$os))
-#       os <- "osx"
-#     if (grepl("linux-gnu", R.version$os))
-#       os <- "linux"
-#   }
-#   tolower(os)
-# }
-# 
-# # Read, reformat, and recode data
-# directory <- "/Users/violet/"
-# ifelse (get_os()=="osx", raw_data <- read.csv(paste0(directory,"Desktop/PrimaryCountries_Years1&2_2.csv"), stringsAsFactors = TRUE), raw_data <- read.csv("C:/Users/Violet/desktop/PrimaryCountries_Years1&2_2.csv", stringsAsFactors = TRUE))
-# empathy_data <- dplyr::select(raw_data, Subject, Country, Gender_Code, QCAEparent_Aff, QCAEparent_Cog, QCAEparent_tot, QCAEchild_Aff,  QCAEchild_Cog, QCAEchild_tot, Empathy_Pain_RESP, Empathy_Sorry_RESP)
-# names(empathy_data) <- tolower(names(empathy_data))
-# empathy_data <- dplyr::rename (empathy_data, gender=gender_code)
-# empathy_data <- empathy_data %>% mutate(country=dplyr::recode(country, `1`="usa",`2`="canada", `3` = "south_africa", `4` = "turkey", `5` = "china", `6` = "kyrgyzstan", `7` = "jordan"))
-# empathy_data <- empathy_data %>% mutate(gender=dplyr::recode(gender, `1`="male",`2`="female"))
-# 
-# # Create unique ID for each subject based on country and subject ID
-# empathy_data <- empathy_data %>% dplyr::mutate(unique_id = paste0(empathy_data$country, "_", empathy_data$subject))
-# # Remove any duplicates based on unique ID
-# empathy_data <- empathy_data %>% filter(!unique_id%in% empathy_data[(duplicated(empathy_data$unique_id)),]$unique_id)
-# 
-# # Correct data types to factors
-# empathy_data$unique_id= as.factor(empathy_data$unique_id)
-# empathy_data$country= as.factor(empathy_data$country)
-# empathy_data$gender= as.factor(empathy_data$gender)
-# empathy_data$subject= as.factor(empathy_data$subject)
-# 
-# # Mean center the responses
-# empathy_data <- empathy_data%>%mutate(empathy_pain_resp_c = empathy_pain_resp-mean(empathy_pain_resp, na.rm = TRUE)) # empathy_pain_resp_c is centered
-# empathy_data <- empathy_data%>%mutate(empathy_sorry_resp_c = empathy_sorry_resp-mean(empathy_sorry_resp, na.rm = TRUE)) # empathy_sorry_resp_c is centered
-# 
-# # Add hofstede scores for individualism/collectivism and separate countries as individualist/collectivist based on score
-# empathy_data <- empathy_data %>% mutate(individualism = as.numeric((case_when(country=="canada" ~ "80",
-#                                                              country=="china" ~ "20",
-#                                                              country=="jordan" ~ "30",
-#                                                              country=="south_africa" ~ "65",
-#                                                              country=="turkey" ~ "37",
-#                                                              country=="usa" ~ "91"))))
-# empathy_data <- empathy_data %>% mutate(individualism_split = ((case_when(country=="canada" ~ "individualist",
-#                                                              country=="china" ~ "collectivist",
-#                                                              country=="jordan" ~ "collectivist",
-#                                                              country=="south_africa" ~ "individualist",
-#                                                              country=="turkey" ~ "collectivist",
-#                                                              country=="usa" ~ "individualist"))))
-# # Add ages
-# ifelse (get_os()=="osx", age_data <- read.csv(paste0(directory,"Desktop/vk_age_calculations.csv"), stringsAsFactors = TRUE), age_data <- read.csv("C:/Users/Violet/desktop/vk_age_calculations.csv", stringsAsFactors = TRUE))
-# empathy_data <- merge(empathy_data, dplyr::select(age_data, country, subject, vk_age_months, vk_age_years), all.x = TRUE, by = c("country", "subject"))
-# empathy_data <- empathy_data %>% dplyr::rename(age_years = vk_age_years, age_months = vk_age_months)
-# # Remove any participants with ages outside of 5-12 years
-# empathy_data <- empathy_data %>% filter(age_years < 11, age_years > 5)
-# write.csv(empathy_data, here("templeton_empathy_clean_data.csv"))
-# ```
-
-# Descriptive Statistics
-### Note: This file reads the merged and cleaned file from the previous block
-
+# Set Up & Descriptive Statistics
+### Set up workspace and run correlation
 
 ``` {r}
-empathy_data <- read.csv(here("templeton_empathy_clean_data.csv"))
+
+# install.packages("tidyverse", "corrplot", "ggcorrplot", "lme4", "mediation", "here", "reshape2")
+require(tidyverse)
+require(sjstats)
+require(sjPlot)
+require(lmerTest)
+require(mediation)
+require(here)
+require(reshape2)
+
+# Clear workspace
+rm(list=ls())
+
+empathy_data <- read.csv(here::here("templeton_empathy_clean_data.csv"))
 
 # Helper function to calculate the mean and the standard deviation for each group ####
 # Created by http://www.sthda.com/english/wiki/ggplot2-line-plot-quick-start-guide-r-software-and-data-visualization
@@ -204,7 +138,7 @@ t.test(filter(empathy_data, individualism_split=="individualist")$empathy_sorry_
 t.test(filter(empathy_data, individualism_split=="individualist")$empathy_sorry_resp_c, filter(empathy_data, individualism_split=="collectivist")$empathy_sorry_resp_c)
 
 # Visualize parent QCAE by split
-parent_summary <- melt(empathy_data %>%
+parent_summary <- reshape2::melt(empathy_data %>%
   group_by(individualism_split) %>%
   dplyr::summarise(parent_aff = mean(qcaeparent_aff, na.rm=TRUE), parent_cog = mean(qcaeparent_cog, na.rm=TRUE), parent_tot = mean(qcaeparent_tot, na.rm=TRUE )), id.vars="individualism_split")
 
@@ -425,11 +359,7 @@ pain_years_country_qcae_summary <- data_summary(empathy_data, varname="empathy_p
 pain_years_country_qcae_summary %>%
   ggplot(aes(x=qcaeparent_tot, y=empathy_pain_resp, group=as.factor(age_years), color=as.factor(age_years))) + 
   geom_point()+
-  geom_smooth(method = lm)
-
-
-
-+
+  geom_smooth(method = lm) +
   scale_color_brewer(palette="Paired")+theme_minimal() +
   #xlab("Age (years)") + ylab("Cognitive Empathy Score") +
   labs(colour = "Country") +
@@ -483,7 +413,7 @@ sorry_individualism <- lm(empathy_sorry_resp_c ~ individualism, data = filter(em
 summary(sorry_individualism) # b1 is significant, so there is a relationship between the parent’s self-reported empathy and the child’s behavior
 
 qcae_individualism <- lm(qcaeparent_tot ~ individualism, data = filter(empathy_data, !is.na(empathy_pain_resp_c)))
-summary(sorry_qcae) # b2 is significant
+summary(qcae_individualism) # b2 is significant
 
 pain_qcae_individualism <- lm(empathy_pain_resp_c ~ individualism + qcaeparent_tot, data = filter(empathy_data, !is.na(empathy_pain_resp_c)))
 summary(pain_qcae_individualism) # b4 (individualism) is not insignificant or smaller than before, so mediation is unlikely
@@ -509,7 +439,7 @@ summary(results_sorry)
 
 pain_data <- filter(data.frame(X = empathy_data$individualism, Y = empathy_data$empathy_pain_resp_c, M = empathy_data$qcaeparent_tot), !is.na(Y))
 
-pain_fit <- sem(pain_model, data = pain_data)
+pain_fit <- lavaan::sem(pain_model, data = pain_data)
 parameterestimates(pain_fit,  standardized=TRUE) %>% 
   knitr::kable()
 sorry_data <- filter(data.frame(X = empathy_data$individualism, Y = empathy_data$empathy_sorry_resp_c, M = empathy_data$qcaeparent_tot), !is.na(Y))
@@ -557,6 +487,34 @@ fit_med_WB6 = lavaan:sem(med_WB6, se = "boot", bootstrap = 1000, data = mediatio
                   likelihood = "wishart")
 summary(fit_med_WB6, standardized = T, rsq = T)
 parameterEstimates(fit_med_WB6)
+
+# Attempting Elizabeth's method
+mediation_data <- filter(empathy_data, !is.na(empathy_pain_resp_c))
+
+med_WB6 = "individualism  ~ a1*qcaeparent_tot
+empathy_pain_resp_c ~ b1*individualism + c*qcaeparent_tot
+
+indirect1 := a1*b1
+direct := c
+total := c + (a1*b1) 
+
+"
+##EH notes - this is flipped, you want,
+empathy_eh = "qcaeparent_tot  ~ a1*individualism
+empathy_pain_resp_c ~ b1*qcaeparent_tot + c*qindividualism
+
+indirect1 := a1*b1
+direct := c
+total := c + (a1*b1) 
+
+"
+
+
+fit_med_WB6 = lavaan::sem(med_WB6, se = "boot", bootstrap = 1000, data = mediation_data, 
+                  likelihood = "wishart")
+summary(fit_med_WB6, standardized = T, rsq = T)
+parameterEstimates(fit_med_WB6)
+
 
 ```
 
