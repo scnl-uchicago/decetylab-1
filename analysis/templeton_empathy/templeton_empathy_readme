@@ -1,7 +1,6 @@
 This folder contains all R scripts to clean and analyze data from Canada, China, Jordan, South Africa, Turkey, and the US in years 1 and 2 of the Templeton project.
 Qualtrics data files are owned and shared by Jean Decety. Dropbox files are owned and shared by Jason Cowell. Other data files are on the deectylab server (ssdfiles.uchicago.edu\decetylab)
 Data for each child are coded with a unique ID, a composite of the country and oiginal subject ID. 
-Columns with the prefix "vk" distinguish intermediate calculations and compilations of multiple columns from previously existing variables
 
 calculate_QCAE.Rmd calculates QCAE scores for parents and children and writes them into "templeton_qcae_calculations.csv."
 QCAE calculations are based off of descriptions in decetylab\projects\research\CrossCulturalMoralDevelopment\Questionnaires\QCAE\QCAE_scoring.pdf
@@ -15,8 +14,19 @@ The script reads in the following files:
 - Turkish_6-12years_merged_data_for_chicago_v1.csv (conversion to csv of Turkish_6-12years_merged_data_for_chicago_v1.sav on Dropbox under CCMD Merge Data/Countries/Turkey/SPSS/Full)
 Note: The calculations for the Turkish data assume that scores were entered so that 1 = strongly disagree, 2 = slightly disagree, 3 = slightly agree, and 4 = strongly agree. It assumes that no reverse-scoring was done during data entry.
 
-calculate_age.Rmd calculates ages in months and years and  based on the following files:
+calculate_age.Rmd calculates ages in months and years based on the following files on the decetylab server. All files were first manually converted to .csv format.
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\canada.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 1.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 2.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china partial qualtrics 2.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\jordan qualtrics.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
+decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
 
-find_gender.Rmd pulls genders from the following files:
+find_gender.Rmd compiles gender information from the following files:
 
 combine_data.Rmd com
+
+
+Columns with the prefix "vk" specify intermediate calculations and compilations of multiple columns, to distinguish these from previously compiled variables with the same name
