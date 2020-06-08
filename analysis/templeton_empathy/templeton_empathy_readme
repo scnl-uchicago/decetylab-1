@@ -15,14 +15,14 @@ The script reads in the following files:
 Note: The calculations for the Turkish data assume that scores were entered so that 1 = strongly disagree, 2 = slightly disagree, 3 = slightly agree, and 4 = strongly agree. It assumes that no reverse-scoring was done during data entry.
 
 calculate_age.Rmd calculates ages in months and years based on the following files on the decetylab server. All files were first manually converted to .csv format.
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\canada.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 1.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 2.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china partial qualtrics 2.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\jordan qualtrics.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
-decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\canada.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 1.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 2.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china partial qualtrics 2.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\jordan qualtrics.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
 
 find_gender.Rmd compiles gender information from the following files:
 
