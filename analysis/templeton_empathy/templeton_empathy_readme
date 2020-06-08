@@ -1,1 +1,10 @@
+This folder contains all R scripts to clean and analyze data from Canada, China, Jordan, South Africa, Turkey, and the US in years 1 and 2 of the Templeton project.
 
+templeton_cleaning.Rmd calculates QCAE scores for parents and children based on the following files:
+- Consolidated Questionnaire - English - CA_June 3, 2020_15.27.csv (raw output from "Consolidated Questionnaire - English -CA" Qualtrics survey)
+- Parent QCAE - China_June 3, 2020_15.11 (raw output from "Parent QCAE - China" Qualtrics survey)
+- QCAE- China_June 3, 2020_15.15 (raw output from "QCAE- China" Qualtrics survey)
+- South Africa - All Questionnaires_June 3, 2020_15.35 (raw output from "South Africa - All Questionnaires_June 3, 2020_15.35" Qualtrics survey)
+- USA- All Questionnaires_June 3, 2020_15.34 (raw output from "USA- All Questionnaires" Qualtrics survey)
+- Turkish_3-5years_merged_data_for_chicago_v1.csv (conversion to csv of Turkish_3-5years_merged_data_for_chicago_v1.sav on Dropbox under CCMD Merge Data/Countries/Turkey/SPSS/Full)
+- Turkish_6-12years_merged_data_for_chicago_v1.csv (conversion to csv of Turkish_6-12years_merged_data_for_chicago_v1.sav on Dropbox under CCMD Merge Data/Countries/Turkey/SPSS/Full)
