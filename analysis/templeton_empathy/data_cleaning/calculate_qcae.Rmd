@@ -63,9 +63,13 @@ clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Sligh
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Slightly Agree", "3")))
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Strongly Agree", "4")))
 clean_canada_data <- clean_canada_data %>% slice(3:n())
-clean_canada_data <- clean_canada_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16) +as.numeric(child_qcae_19) +
-                                                    as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
+
+
+clean_canada_data <- clean_canada_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16)
+                                                  +as.numeric(child_qcae_19) + as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
                                                     as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
+
+
 clean_canada_data <- clean_canada_data %>% mutate(child_qcae_os = as.numeric(child_qcae_1) +
                                                     as.numeric(child_qcae_3) +as.numeric(child_qcae_4) +as.numeric(child_qcae_5) +
                                                     as.numeric(child_qcae_6) +as.numeric(child_qcae_18) +as.numeric(child_qcae_28) +as.numeric(child_qcae_30) +
@@ -437,10 +441,67 @@ clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_tot = parent_qcae_
 clean_turkey_data <- clean_turkey_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
                                                    parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
 
+jordan_data <- read.csv(here("jordan qualtrics.csv"))
+
+clean_jordan_data <- jordan_data %>% rename_all(funs(str_replace(., "QCAEchild", "child_qcae"  )))
+clean_jordan_data <- clean_jordan_data %>% rename_all(funs(str_replace(., "QCAEparent", "parent_qcae"  )))
+clean_jordan_data <- clean_jordan_data %>% rename (unique_id = Subject)
+clean_jordan_data$unique_id <- str_c("jordan_", clean_jordan_data$unique_id)
+
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_1=abs(child_qcae_1-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_2=abs(child_qcae_2-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_17=abs(child_qcae_17-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_29=abs(child_qcae_29-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_1=abs(parent_qcae_1-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_2=abs(parent_qcae_2-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_17=abs(parent_qcae_17-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_29=abs(parent_qcae_29-5))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16) +as.numeric(child_qcae_19) +
+                                                    as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
+                                                    as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_os = as.numeric(child_qcae_1) +
+                                                    as.numeric(child_qcae_3) +as.numeric(child_qcae_4) +as.numeric(child_qcae_5) +
+                                                    as.numeric(child_qcae_6) +as.numeric(child_qcae_18) +as.numeric(child_qcae_28) +as.numeric(child_qcae_30) +
+                                                    as.numeric(child_qcae_31))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_cog = child_qcae_os + child_qcae_pt)
+
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_ec = as.numeric(child_qcae_8) + as.numeric(child_qcae_9) +as.numeric(child_qcae_13) +
+                                                    as.numeric(child_qcae_14))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_prox_r = as.numeric(child_qcae_7) + as.numeric(child_qcae_10) +as.numeric(child_qcae_12) +
+                                                    as.numeric(child_qcae_23))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_periph_r = as.numeric(child_qcae_2) + as.numeric(child_qcae_11) +as.numeric(child_qcae_17) +
+                                                    as.numeric(child_qcae_29))
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_aff = child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r)
+clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_tot = child_qcae_aff+child_qcae_cog)
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_pt = as.numeric(parent_qcae_15) + as.numeric(parent_qcae_16) +as.numeric(parent_qcae_19) +
+                                                    as.numeric(parent_qcae_20) +as.numeric(parent_qcae_21) +as.numeric(parent_qcae_22) +as.numeric(parent_qcae_24) +
+                                                    as.numeric(parent_qcae_25) + as.numeric(parent_qcae_26) +as.numeric(parent_qcae_27))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_os = as.numeric(parent_qcae_1) +
+                                                    as.numeric(parent_qcae_3) +as.numeric(parent_qcae_4) +as.numeric(parent_qcae_5) +
+                                                    as.numeric(parent_qcae_6) +as.numeric(parent_qcae_18) +as.numeric(parent_qcae_28) +as.numeric(parent_qcae_30) +
+                                                    as.numeric(parent_qcae_31))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_cog = parent_qcae_os + parent_qcae_pt)
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_ec = as.numeric(parent_qcae_8) + as.numeric(parent_qcae_9) +as.numeric(parent_qcae_13) +
+                                                    as.numeric(parent_qcae_14))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_prox_r = as.numeric(parent_qcae_7) + as.numeric(parent_qcae_10) +as.numeric(parent_qcae_12) +
+                                                    as.numeric(parent_qcae_23))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_periph_r = as.numeric(parent_qcae_2) + as.numeric(parent_qcae_11) +as.numeric(parent_qcae_17) +
+                                                    as.numeric(parent_qcae_29))
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_aff = parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r)
+clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_tot = parent_qcae_aff+parent_qcae_cog)
+
+clean_jordan_data <- clean_jordan_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
+                                                   parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
+
+
+
+
+
 output_data <- full_join(clean_canada_data, clean_china_data)
 output_data <- full_join(output_data, clean_usa_data)
 output_data <- full_join(output_data, clean_south_africa_data)
 output_data <- full_join(output_data, clean_turkey_data)
+output_data <- full_join(output_data, clean_jordan_data)
 
 output_data <- output_data %>% filter(unique_id != "canada_" & unique_id != "china_" & unique_id != "usa_")
 
@@ -449,6 +510,15 @@ output_data <- output_data %>% rename("vk_child_qcae_aff" = child_qcae_aff, "vk_
                                       "vk_child_qcae_pt" = child_qcae_pt, "vk_child_qcae_ec" = child_qcae_ec, "vk_child_qcae_tot" = child_qcae_tot,
                                       "vk_parent_qcae_aff" = parent_qcae_aff, "vk_parent_qcae_cog" = parent_qcae_cog, "vk_parent_qcae_os" = parent_qcae_os,
                                       "vk_parent_qcae_pt" = parent_qcae_pt, "vk_parent_qcae_ec" = parent_qcae_ec, "vk_parent_qcae_tot" = parent_qcae_tot)
+
+
+#Remove any duplicate rows
+output_data <- distinct(output_data)
+
+
+# Uncomment to see any remaining duplicate rows with slightly different values
+# View(output_data %>% add_count(unique_id) %>% filter(n>1))
+
 
 write.csv(output_data, here("templeton_qcae_calculations.csv"))
 
