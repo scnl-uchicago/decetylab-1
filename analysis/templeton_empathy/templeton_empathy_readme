@@ -16,6 +16,7 @@ The script reads in the following files:
 Note: The calculations for the Turkey and Jordan data assume that scores were entered so that 1 = strongly disagree, 2 = slightly disagree, 3 = slightly agree, and 4 = strongly agree. It assumes that no reverse-scoring was done during data entry.
 
 calculate_age.Rmd calculates ages in months and years based on the following files on the decetylab server. All files were first manually converted to .csv format.
+The calculated ages are written into a file called "templeton_age_calculations.csv."
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\canada.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 1.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 2.xslx
@@ -24,6 +25,8 @@ calculate_age.Rmd calculates ages in months and years based on the following fil
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
+Due to slight imprecision in age calculations in the script (likely due to inconsistencies during leap years), calculations of age were off by an average of 1 month for 2.1% of participants.
+Age in months were calculated separately for these participants using Google Sheets' DATEDIF function and checked against https://www.calculator.net/age-calculator.html, then recorded in the file age_supplement.csv.
 
 find_gender.Rmd compiles gender information from the following files:
 
