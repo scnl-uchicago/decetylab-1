@@ -33,6 +33,7 @@ clean_canada_data <- clean_canada_data %>% mutate(birth_date = paste0(ifelse(chi
                                                                            "/", ifelse(childbda_mm<10, paste0("0", childbda_mm), childbda_mm),
                                                                            "/", childbday_yyyy))
 clean_canada_data <- clean_canada_data %>% select(unique_id, collection_date, birth_date, qualtrics_age)
+clean_canada_data <- clean_canada_data %>% filter(unique_id != "canada_NA")
 
 clean_china_data_1 <- china_data_1 %>% mutate (unique_id = paste0("china_", ï..))
 clean_china_data_1 <- clean_china_data_1 %>% rename (collection_date = X)
@@ -110,41 +111,48 @@ combined_data <- combined_data %>% mutate (calculated_age = floor(ifelse(is.na(c
 # Update ages for 2.1% of participants whose ages were calculated incorrectly by 1 month, possibly due to rounding errors or inconsistencies between leap years. 
 # These participants' ages in months were recalculated in Google Sheets using the DATEDIF function, then checked against https://www.calculator.net/age-calculator.html, and are individually corrected below.
 
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "canada_1042", 97))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "canada_1201", 61))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "canada_1042", 97))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "canada_1201", 61))
 
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "jordan_47", 98))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "jordan_56", 126))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "jordan_101", 114))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "jordan_47", 98))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "jordan_56", 126))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "jordan_101", 114))
  
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2015", 111))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2020", 101))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2089", 104))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2114", 93))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2140", 108))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2152", 76))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2181", 154))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2216", 145))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "south_africa_2237", 167))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2015", 111))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2020", 101))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2089", 104))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2114", 93))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2140", 108))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2152", 76))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2181", 154))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2216", 145))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "south_africa_2237", 167))
 
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_44", 54))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_55", 61))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_109", 58))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_150", 61))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_156", 56))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_175", 37))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_436", 80))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_439", 76))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_539", 99))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_553", 103))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "turkey_570", 136))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_44", 54))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_55", 61))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_109", 58))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_150", 61))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_156", 56))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_175", 37))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_436", 80))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_439", 76))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_539", 99))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_553", 103))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "turkey_570", 136))
 
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_62", 105))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_235", 87))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_247", 89))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_321", 152))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_457", 92))
-combined_data <- combined_data %>% mutate(new_age=replace(calculated_age, unique_id == "usa_462", 129))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_62", 105))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_235", 87))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_247", 89))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_321", 152))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_457", 92))
+combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_462", 129))
+
+#Remove any duplicate rows
+output_data <- distinct(combined_data)
+
+
+# Uncomment to see any remaining duplicate entries with slightly different values
+# View(output_data %>% add_count(unique_id) %>% filter(n>1))
 
 write.csv(combined_data, "templeton_age_calculations.csv")
 
