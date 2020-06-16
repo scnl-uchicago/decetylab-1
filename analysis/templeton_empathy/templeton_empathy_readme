@@ -22,7 +22,7 @@ The calculated ages are written into a file called "templeton_age_calculations.c
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china full qualtrics 2.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Select Data\china partial qualtrics 2.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\jordan qualtrics.xslx
-- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
+- decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx (note: both sheets converted to .csv files and read in separately) 
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
 Due to slight imprecision in age calculations in the script (likely due to inconsistencies during leap years), calculations of age were off by 1 month for 2.1% of participants.
