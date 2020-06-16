@@ -35,7 +35,7 @@ extract.gender.Rmd writes the results into a file called "templeton_gender_compi
 - Dropbox/CCMD Merge Data/Countries/Jordan/Excel/Master_ Jordan.xls
 - Dropbox/CCMD Merge Data/Countries/South Africa/Excel/Mastersheet South Africa.xls
 - Dropbox/CCMD Merge Data/Countries/Turkey/SPSS/Agg/Membership_TK.sav
-- Dropbox/CCMD Merge Data/Countries/US/Excel/Master_US_aug062014.xlsx
+- Dropbox/CCMD Merge Data/Countries/US/Excel/Master_US_aug062014.xlsx (each sheet saved to a separate csv file)
 In the case that genders could not be found in these files, they were taken from CCMD Merge Data/MasterSheets/PrimaryCountries_Years1&2_2.sav
 
 
