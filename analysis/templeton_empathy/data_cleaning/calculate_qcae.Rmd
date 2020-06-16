@@ -388,13 +388,13 @@ clean_south_africa_data <- clean_south_africa_data %>% select (unique_id, child_
                                              parent_qcae_os, parent_qcae_pt, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff,parent_qcae_cog,parent_qcae_tot)
 
 turkey_toddler_data <- read.csv(here("Turkish_3-5years_merged_data_for_chicago_v1.csv"))
-turkey_toddler_data <- tibble(turkey_toddler_data %>% select(Ã¯..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
+turkey_toddler_data <- tibble(turkey_toddler_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
 turkey_child_data <- read.csv(here("Turkish_6-12years_merged_data_for_chicago_v1.csv"))
-turkey_child_data <- tibble(turkey_toddler_data %>% select(Ã¯..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
+turkey_child_data <- tibble(turkey_toddler_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
 turkey_data <- rbind(turkey_toddler_data, turkey_child_data)
 clean_turkey_data <- turkey_data %>% rename_all(funs(str_replace(., "c_emp", "child_qcae"  )))
 clean_turkey_data <- clean_turkey_data %>% rename_all(funs(str_replace(., "m_emp", "parent_qcae"  )))
-clean_turkey_data <- clean_turkey_data %>% rename (unique_id = Ã¯..id_no)
+clean_turkey_data <- clean_turkey_data %>% rename (unique_id = ï..id_no)
 clean_turkey_data$unique_id <- str_c("turkey_", clean_turkey_data$unique_id)
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_1=abs(child_qcae_1-5))
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_2=abs(child_qcae_2-5))
@@ -512,7 +512,7 @@ output_data <- output_data %>% rename("vk_child_qcae_aff" = child_qcae_aff, "vk_
                                       "vk_parent_qcae_pt" = parent_qcae_pt, "vk_parent_qcae_ec" = parent_qcae_ec, "vk_parent_qcae_tot" = parent_qcae_tot)
 
 
-# Remove any duplicate rows
+#Remove any duplicate rows
 output_data <- distinct(output_data)
 
 
