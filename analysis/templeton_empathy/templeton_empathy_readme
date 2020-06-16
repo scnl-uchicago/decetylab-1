@@ -29,7 +29,7 @@ Due to slight imprecision in age calculations in the script (likely due to incon
 Age in months were calculated separately for these participants using Google Sheets' DATEDIF function and checked against https://www.calculator.net/age-calculator.html, then updated individually in the script.
 
 find_gender.Rmd compiles gender information from the following files and writes the results into a file called "templeton_gender_compilation.csv":
-- Dropbox/ CCMD Merge Data/Countries/Canada/Excel/Master_CA.xlsx
+- Dropbox/CCMD Merge Data/Countries/Canada/Excel/Master_CA.xlsx
 - Dropbox/CCMD Merge Data/Countries/China/Excel files/CCMD_China_2013+2014.xlsx
 - Dropbox/CCMD Merge Data/Countries/Jordan/Excel/Master_ Jordan.xls
 - Dropbox/CCMD Merge Data/Countries/South Africa/Excel/Mastersheet South Africa.xls
