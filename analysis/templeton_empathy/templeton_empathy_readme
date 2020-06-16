@@ -25,8 +25,8 @@ The calculated ages are written into a file called "templeton_age_calculations.c
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\south africa qualtrics.xslx
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\turkish_mergeddata_allages.sav
 - decetylab\projects\research\CrossCulturalMoralDevelopment\DATA\Qualtrics Full Data\US Full Qualtrics.xlsx
-Due to slight imprecision in age calculations in the script (likely due to inconsistencies during leap years), calculations of age were off by an average of 1 month for 2.1% of participants.
-Age in months were calculated separately for these participants using Google Sheets' DATEDIF function and checked against https://www.calculator.net/age-calculator.html, then recorded in the file age_supplement.csv.
+Due to slight imprecision in age calculations in the script (likely due to inconsistencies during leap years), calculations of age were off by 1 month for 2.1% of participants.
+Age in months were calculated separately for these participants using Google Sheets' DATEDIF function and checked against https://www.calculator.net/age-calculator.html, then updated individually in the script.
 
 find_gender.Rmd compiles gender information from the following files:
 
