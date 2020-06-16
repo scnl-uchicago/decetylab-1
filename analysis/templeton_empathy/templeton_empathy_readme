@@ -28,9 +28,13 @@ The calculated ages are written into a file called "templeton_age_calculations.c
 Due to slight imprecision in age calculations in the script (likely due to inconsistencies during leap years), calculations of age were off by 1 month for 2.1% of participants.
 Age in months were calculated separately for these participants using Google Sheets' DATEDIF function and checked against https://www.calculator.net/age-calculator.html, then updated individually in the script.
 
-find_gender.Rmd compiles gender information from the following files:
+find_gender.Rmd compiles gender information from the following files and writes the results into a file called "templeton_gender_compilation.csv":
+- Dropbox/ CCMD Merge Data/Countries/Canada/Excel/Master_CA.xlsx
+- Dropbox/CCMD Merge Data/Countries/China/Excel files/CCMD_China_2013+2014.xlsx
+
 
 combine_data.Rmd com
 
-
+Output files from these scripts are saved to a Dropbox folder called Templeton Empathy owned by Jean Decety under the folder Analysis/Data Cleaning.
+The final compilation of clean data is saved under Dropbox/Templeton Empathy/ Analysis.
 Columns with the prefix "vk" specify intermediate calculations and compilations of multiple columns, to distinguish these from previously compiled variables with the same name
