@@ -407,7 +407,7 @@ Read, clean, and calculate scores for Turkey data
 turkey_toddler_data <- read.csv(here("Turkish_3-5years_merged_data_for_chicago_v1.csv"))
 turkey_toddler_data <- tibble(turkey_toddler_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
 turkey_child_data <- read.csv(here("Turkish_6-12years_merged_data_for_chicago_v1.csv"))
-turkey_child_data <- tibble(turkey_toddler_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
+turkey_child_data <- tibble(turkey_child_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
 turkey_data <- rbind(turkey_toddler_data, turkey_child_data)
 clean_turkey_data <- turkey_data %>% rename_all(funs(str_replace(., "c_emp", "child_qcae"  )))
 clean_turkey_data <- clean_turkey_data %>% rename_all(funs(str_replace(., "m_emp", "parent_qcae"  )))
@@ -466,7 +466,8 @@ Read, clean, and calculate scores for Jordan data
 jordan_data <- read.csv(here("jordan qualtrics.csv"))
 clean_jordan_data <- jordan_data %>% rename_all(funs(str_replace(., "QCAEchild", "child_qcae"  )))
 clean_jordan_data <- clean_jordan_data %>% rename_all(funs(str_replace(., "QCAEparent", "parent_qcae"  )))
-clean_jordan_data <- clean_jordan_data %>% rename (unique_id = Subject)
+
+clean_jordan_data <- clean_jordan_data %>% rename (unique_id = ï..Subject)
 clean_jordan_data$unique_id <- str_c("jordan_", clean_jordan_data$unique_id)
 # Reverse code (assumes that numeric values in raw data correspond to likert scale ratings, not item scores)
 clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_1=abs(child_qcae_1-5))
