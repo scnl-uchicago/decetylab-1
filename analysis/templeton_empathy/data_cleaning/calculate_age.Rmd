@@ -1,18 +1,21 @@
 ---
-title: "Age Calculations"
+title: "Calculate Age"
 author: "Violet Kozloff"
 date: "June 8, 2020"
 output: html_document
 ---
 
+Set up workspace
 ```{r}
-# install.packages("here", "tidyverse", "lubridate")
+install.packages("here", "tidyverse", "lubridate")
 require("here")
 require("tidyverse")
 require("lubridate")
 
 rm(list = ls())
-
+```
+Read in data files
+```{r}
 canada_data <- as_tibble(read.csv(here("canada.csv")))
 china_data_1 <- as_tibble(read.csv(here("china full qualtrics 1.csv")))
 china_data_2 <- as_tibble(read.csv(here("china full qualtrics 2.csv")))
@@ -22,7 +25,10 @@ south_africa_data_1 <- as_tibble(read.csv(here("south africa qualtrics_sheet1.cs
 south_africa_data_2 <- as_tibble(read.csv(here("south africa qualtrics_sheet2.csv")))
 turkey_data <- as_tibble(read.csv(here("turkish_mergeddata_allages.csv")))
 usa_data <- as_tibble(read.csv(here("US Full Qualtrics.csv")))
+```
 
+Clean Canada data
+```{r}
 clean_canada_data <- canada_data %>% mutate (unique_id = paste0("canada_", ï..Subject))
 clean_canada_data <- clean_canada_data %>% rename (qualtrics_age = age)
 clean_canada_data <- clean_canada_data %>% mutate(collection_date = paste0(ifelse(todaysdate_mm<10, paste0("0", todaysdate_mm), todaysdate_mm), 
@@ -34,7 +40,9 @@ clean_canada_data <- clean_canada_data %>% mutate(birth_date = paste0(ifelse(chi
                                                                            "/", childbday_yyyy))
 clean_canada_data <- clean_canada_data %>% select(unique_id, collection_date, birth_date, qualtrics_age)
 clean_canada_data <- clean_canada_data %>% filter(unique_id != "canada_NA")
-
+```
+Clean China data
+```{r}
 clean_china_data_1 <- china_data_1 %>% mutate (unique_id = paste0("china_", ï..))
 clean_china_data_1 <- clean_china_data_1 %>% rename (collection_date = X)
 clean_china_data_1 <- clean_china_data_1 %>% rename (birth_date = X.143)
@@ -55,14 +63,18 @@ clean_china_data_3 <- clean_china_data_3 %>% select(unique_id, collection_date, 
 clean_china_data <- rbind(clean_china_data_1, clean_china_data_2)
 clean_china_data <- rbind(clean_china_data, clean_china_data_3)
 clean_china_data <- filter(clean_china_data, unique_id!="china_")
-
+```
+Clean Jordan data
+```{r}
 clean_jordan_data <- jordan_data %>% mutate (unique_id = paste0("jordan_", ï..Subject))
 clean_jordan_data <- clean_jordan_data %>% rename (collection_date = date)
 clean_jordan_data <- clean_jordan_data %>% rename (birth_date = childbday)
 clean_jordan_data <- clean_jordan_data %>% rename (qualtrics_age = age)
 clean_jordan_data <- clean_jordan_data %>% select(unique_id, collection_date, birth_date, qualtrics_age)
 clean_jordan_data <- clean_jordan_data %>% filter(unique_id != "jordan_NA")
-
+```
+Clean South Africa data
+```{r}
 clean_south_africa_data_1 <- south_africa_data_1 %>% mutate (unique_id = paste0("south_africa_", ï..Subject))
 clean_south_africa_data_1 <- clean_south_africa_data_1 %>% rename (qualtrics_age = age)
 clean_south_africa_data_1 <- clean_south_africa_data_1 %>% mutate(collection_date = paste0(ifelse(todaysdate_mm<10, paste0("0", todaysdate_mm), todaysdate_mm), "/", ifelse(todaysdate_dd<10, paste0("0", todaysdate_dd), todaysdate_dd), "/", todaysdate_yyyy))
@@ -76,14 +88,18 @@ clean_south_africa_data_2 <- clean_south_africa_data_2 %>% mutate(collection_dat
 clean_south_africa_data_2 <- clean_south_africa_data_2 %>% mutate(birth_date = paste0(ifelse(as.numeric(as.character(Q5_1_TEXT))<10, paste0("0", Q5_1_TEXT), as.character(Q5_1_TEXT)), "/", ifelse(as.numeric(as.character(Q5_2_TEXT))<10, paste0("0", Q5_2_TEXT), as.character(Q5_2_TEXT)), "/",  as.character(Q5_3_TEXT)))
 clean_south_africa_data_2 <- clean_south_africa_data_2 %>% select(unique_id, collection_date, birth_date, qualtrics_age)
 clean_south_africa_data <- rbind(clean_south_africa_data_1, clean_south_africa_data_2)
-
+```
+Clean Turkey data
+```{r}
 clean_turkey_data <- turkey_data %>% mutate (unique_id = paste0("turkey_", ï..Subject))
 clean_turkey_data <- clean_turkey_data %>% rename (collection_date = todaysdate)
 clean_turkey_data <- clean_turkey_data %>% rename (birth_date = childbday)
 clean_turkey_data <- clean_turkey_data %>% rename (qualtrics_age = age)
 clean_turkey_data <- clean_turkey_data %>% select(unique_id, collection_date, birth_date, qualtrics_age)
 clean_turkey_data <- clean_turkey_data %>% filter(unique_id != "turkey_NA")
-
+```
+Clean USA data
+```{r}
 clean_usa_data <- usa_data %>% mutate (unique_id = paste0("usa_", ï..Subject))
 clean_usa_data <- clean_usa_data %>% mutate(collection_date = paste0(ifelse(as.numeric(as.character(todaysdate_mm))<10, paste0("0", todaysdate_mm), as.character(todaysdate_mm)), "/", ifelse(as.numeric(as.character(todaysdate_dd))<10, paste0("0", todaysdate_dd), as.character(todaysdate_dd)), "/",  as.character(todaysdate_yyyy)))
 clean_usa_data <- clean_usa_data %>% mutate(birth_date = paste0(ifelse(as.numeric(as.character(childbday_mm))<10, paste0("0", childbday_mm), as.character(childbday_mm)), "/", ifelse(as.numeric(as.character(childbday_dd))<10, paste0("0", childbday_dd), as.character(childbday_dd)), "/",  as.character(childbday_yyyy)))
@@ -91,26 +107,31 @@ clean_usa_data <- clean_usa_data %>% rename (qualtrics_age = age)
 clean_usa_data <- clean_usa_data %>% select(unique_id, collection_date, birth_date, qualtrics_age)
 clean_usa_data <- clean_usa_data %>% filter(unique_id != "usa_NA")
 usa_data <- as_tibble(read.csv(here("US Full Qualtrics.csv")))
-
+```
+Combine data
+```{r}
 combined_data <- rbind(clean_canada_data, clean_china_data)
 combined_data <- rbind(combined_data, clean_jordan_data)
 combined_data <- rbind(combined_data, clean_south_africa_data)
 combined_data <- rbind(combined_data, clean_turkey_data)
 combined_data <- rbind(combined_data, clean_usa_data)
 combined_data <- (as_tibble(combined_data))
+```
+Calculate ages
+```{r}
 combined_data <- combined_data %>% mutate(birth_date =ifelse(str_detect(combined_data$birth_date, "NA") | str_length(birth_date)<8, NA, birth_date))
+# Get rid of entries with impossible birth dates
 combined_data <- combined_data %>% mutate(birth_date =ifelse(birth_date=="04/31/2004" | birth_date == "14/02/2001", NA, birth_date))
 combined_data <- combined_data %>% mutate(birth_date = as.Date(mdy(birth_date)))
 combined_data <- combined_data %>% mutate(collection_date =ifelse(str_detect(combined_data$collection_date, "NA") | str_length(collection_date)<8, NA, collection_date))
 combined_data <- combined_data %>% mutate(collection_date = as.Date(mdy(collection_date)))
-
+# Calculate age in months
 combined_data <- combined_data %>% mutate (calculated_age = floor( as.numeric(difftime(collection_date, birth_date, units ="days"))/(365.25/12)))
-
 combined_data <- combined_data %>% mutate (calculated_age = floor(ifelse(is.na(calculated_age) | calculated_age<=0, as.numeric(qualtrics_age), calculated_age)))
-
-# Update ages for 2.1% of participants whose ages were calculated incorrectly by 1 month, possibly due to rounding errors or inconsistencies between leap years. 
-# These participants' ages in months were recalculated in Google Sheets using the DATEDIF function, then checked against https://www.calculator.net/age-calculator.html, and are individually corrected below.
-
+```
+Update ages for 2.1% of participants whose ages were calculated incorrectly by 1 month, possibly due to rounding errors or inconsistencies between leap years. 
+These participants' ages in months were recalculated in Google Sheets using the DATEDIF function, then checked against https://www.calculator.net/age-calculator.html, and are individually corrected below.
+```{r}
 combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "canada_1042", 97))
 combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "canada_1201", 61))
 
@@ -146,14 +167,32 @@ combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age,
 combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_321", 152))
 combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_457", 92))
 combined_data <- combined_data %>% mutate(calculated_age=replace(calculated_age, unique_id == "usa_462", 129))
-
+```
+Clean combined data
+```{r}
 #Remove any duplicate rows
-output_data <- distinct(combined_data)
-
+output_data <- combined_data %>% select(-qualtrics_age, -collection_date, -birth_date) %>% distinct()
 
 # Uncomment to see any remaining duplicate entries with slightly different values
 # View(output_data %>% add_count(unique_id) %>% filter(n>1))
+  
+# Remove duplicate entry with missing values from age data
+output_data <- output_data %>% filter(!(is.na(calculated_age) & (unique_id == "china_3092")))
 
-write.csv(combined_data, "templeton_age_calculations.csv")
+# Remove duplicate entries with conflicting values from age data
+output_data <- output_data %>% filter(!(unique_id == "south_africa_2108" | unique_id == "south_africa_2116" | unique_id == "south_africa_4885"))
+```
+
+Calculate age in years and write to CSV
+```{r}
+output_data <- output_data %>% rename (vk_age_months = calculated_age)
+output_data <- output_data %>% 
+  mutate (vk_age_years = floor (vk_age_months/12)) %>% 
+  select (unique_id, vk_age_years, vk_age_months)
+
+# Remove any whose age cannot be calculated
+output_data <- output_data %>% filter(!is.na(vk_age_months))
+
+write.csv(output_data, "templeton_age_calculations.csv")
 
 ```

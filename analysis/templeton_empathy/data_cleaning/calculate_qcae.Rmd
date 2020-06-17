@@ -1,23 +1,30 @@
 ---
 title: "Calculate QCAE"
-output: html_notebook
+author: "Violet Kozloff"
+date: "June 8, 2020"
+output: html_document
 ---
 
+Prepare workspace
 ```{r}
-# install.packages("tidyverse", "here")
+install.packages("tidyverse", "here")
 require(tidyverse)
 require(here)
 
 rm(list = ls())
+```
 
 
+Read, clean, and calculate scores for Canada data
+
+```{r}
 canada_data <- read.csv(here("Consolidated Questionnaire - English - CA_June 3, 2020_15.27.csv"))
-
 clean_canada_data <- tibble(canada_data %>% select(Q1, QID39_1:QID39_31, QID58_1:QID58_31))
 clean_canada_data <- clean_canada_data %>% rename_all(funs(str_replace(., "QID39", "child_qcae"  )))
 clean_canada_data <- clean_canada_data %>% rename_all(funs(str_replace(., "QID58", "parent_qcae"  )))
 clean_canada_data <- clean_canada_data %>% rename (unique_id = Q1)
 clean_canada_data$unique_id <- str_c("canada_", clean_canada_data$unique_id)
+# Reverse code
 clean_canada_data <- clean_canada_data %>% mutate(child_qcae_1=recode(child_qcae_1, 
                          `Strongly Agree`="1",
                          `Slightly Agree`="2",
@@ -58,13 +65,14 @@ clean_canada_data <- clean_canada_data %>% mutate(parent_qcae_29=recode(parent_q
                                                                   `Slightly Agree`="2",
                                                                   `Slightly Disagree`="3",
                                                                   `Strongly Disagree`="4"))
+# Code numeric values
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Strongly Disagree", "1")))
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Slightly Disagree", "2")))
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Slightly Agree", "3")))
 clean_canada_data <- clean_canada_data %>% mutate_all(funs(str_replace(., "Strongly Agree", "4")))
 clean_canada_data <- clean_canada_data %>% slice(3:n())
 
-
+# Calculate QCAE scores
 clean_canada_data <- clean_canada_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16)
                                                   +as.numeric(child_qcae_19) + as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
                                                     as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
@@ -103,9 +111,11 @@ clean_canada_data <- clean_canada_data %>% mutate(parent_qcae_tot = parent_qcae_
 
 clean_canada_data <- clean_canada_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
                                                    parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
+```
 
+Read, clean, and calculate scores for China data
 
-                                                    
+```{r}                                                 
 china_child_data <- read.csv(here("Parent QCAE - China_June 3, 2020_15.11.csv"))
 clean_china_child_data <- tibble(china_child_data %>% select(Q2, Q1_1:Q1_31))
 clean_china_child_data <- clean_china_child_data %>% rename_all(funs(str_replace(., "Q1", "child_qcae"  )))
@@ -119,6 +129,8 @@ clean_china_parent_data <- clean_china_parent_data %>% rename (unique_id = Q2)
 clean_china_parent_data$unique_id <- str_c("china_", clean_china_parent_data$unique_id)
 clean_china_parent_data <- clean_china_parent_data %>% slice(3:n())
 clean_china_data <- full_join(clean_china_parent_data, clean_china_child_data, by = "unique_id")
+
+# Reverse score
 clean_china_data <- clean_china_data %>% mutate(child_qcae_1=recode(child_qcae_1, 
                                                                       `Strongly Agree`="1",
                                                                       `Slightly Agree`="2",
@@ -159,10 +171,12 @@ clean_china_data <- clean_china_data %>% mutate(parent_qcae_29=recode(parent_qca
                                                                         `Slightly Agree`="2",
                                                                         `Slightly Disagree`="3",
                                                                         `Strongly Disagree`="4"))
+# Code numeric values
 clean_china_data <- clean_china_data %>% mutate_all(funs(str_replace(., "Strongly Disagree", "1")))
 clean_china_data <- clean_china_data %>% mutate_all(funs(str_replace(., "Slightly Disagree", "2")))
 clean_china_data <- clean_china_data %>% mutate_all(funs(str_replace(., "Slightly Agree", "3")))
 clean_china_data <- clean_china_data %>% mutate_all(funs(str_replace(., "Strongly Agree", "4")))
+# Calculate subscale scores
 clean_china_data <- clean_china_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16) +as.numeric(child_qcae_19) +
                                                     as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
                                                     as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
@@ -199,13 +213,16 @@ clean_china_data <- clean_china_data %>% mutate(parent_qcae_tot = parent_qcae_af
 
 clean_china_data <- clean_china_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
                                                    parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
+```
 
-
+Read, clean, and calculate scores for USA data
+```{r}
 usa_data <- read.csv(here("USA- All Questionnaires_June 3, 2020_15.34.csv"))
 clean_usa_data <- tibble(usa_data %>% select(RecipientFirstName, Q1_1:Q1_31, Q1_1.2:Q1_31.1))
 clean_usa_data <- clean_usa_data %>% rename_all(funs(str_replace(., "Q1_", "qcae_")))
 clean_usa_data <- clean_usa_data %>% rename (unique_id = RecipientFirstName)
 clean_usa_data$unique_id <- str_c("usa_", clean_usa_data$unique_id)
+# Reverse score
 clean_usa_data <- clean_usa_data %>% mutate(qcae_1=recode(qcae_1, 
                                                                     `Strongly Agree`="1",
                                                                     `Slightly Agree`="2",
@@ -246,11 +263,13 @@ clean_usa_data <- clean_usa_data %>% mutate(qcae_29.1=recode(qcae_29.1,
                                                                       `Slightly Agree`="2",
                                                                       `Slightly Disagree`="3",
                                                                       `Strongly Disagree`="4"))
+# Code numeric values
 clean_usa_data <- clean_usa_data %>% mutate_all(funs(str_replace(., "Strongly Disagree", "1")))
 clean_usa_data <- clean_usa_data %>% mutate_all(funs(str_replace(., "Slightly Disagree", "2")))
 clean_usa_data <- clean_usa_data %>% mutate_all(funs(str_replace(., "Slightly Agree", "3")))
 clean_usa_data <- clean_usa_data %>% mutate_all(funs(str_replace(., "Strongly Agree", "4")))
 clean_usa_data <- clean_usa_data %>% slice(3:n())
+# Calculate subscale scores
 clean_usa_data <- clean_usa_data %>% mutate(child_qcae_pt = as.numeric(qcae_15) + as.numeric(qcae_16) +as.numeric(qcae_19) +
                                                   as.numeric(qcae_20) +as.numeric(qcae_21) +as.numeric(qcae_22) +as.numeric(qcae_24) +
                                                   as.numeric(qcae_25) + as.numeric(qcae_26) +as.numeric(qcae_27))
@@ -268,9 +287,6 @@ clean_usa_data <- clean_usa_data %>% mutate(child_qcae_periph_r = as.numeric(qca
                                                   as.numeric(qcae_29))
 clean_usa_data <- clean_usa_data %>% mutate(child_qcae_aff = child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r)
 clean_usa_data <- clean_usa_data %>% mutate(child_qcae_tot = child_qcae_aff+child_qcae_cog)
-
-
-
 clean_usa_data <- clean_usa_data %>% mutate(parent_qcae_pt = as.numeric(qcae_15.1) + as.numeric(qcae_16.1) +as.numeric(qcae_19.1) +
                                                   as.numeric(qcae_20.1) +as.numeric(qcae_21.1) +as.numeric(qcae_22.1) +as.numeric(qcae_24.1) +
                                                   as.numeric(qcae_25.1) + as.numeric(qcae_26.1) +as.numeric(qcae_27.1))
@@ -290,18 +306,17 @@ clean_usa_data <- clean_usa_data %>% mutate(parent_qcae_tot = parent_qcae_aff+pa
 
 clean_usa_data <- clean_usa_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_cog, child_qcae_tot,
                                              parent_qcae_os, parent_qcae_pt, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff,parent_qcae_cog,parent_qcae_tot)
+```
 
+Read, clean, and calculate scores for South Africa data
 
-
-
-
-
-
+```{r}
 south_africa_data <- read.csv(here("South Africa - All Questionnaires_June 3, 2020_15.35.csv"))
 clean_south_africa_data <- tibble(south_africa_data %>% select(Q30, Q1_1:Q1_31, Q1_1.2:Q1_31.1))
 clean_south_africa_data <- clean_south_africa_data %>% rename_all(funs(str_replace(., "Q1_", "qcae_")))
 clean_south_africa_data <- clean_south_africa_data %>% rename (unique_id = Q30)
 clean_south_africa_data$unique_id <- str_c("south_africa_", clean_south_africa_data$unique_id)
+# Reverse code
 clean_south_africa_data <- clean_south_africa_data %>% mutate(qcae_1=recode(qcae_1, 
                                                           `Strongly Agree`="1",
                                                           `Slightly Agree`="2",
@@ -342,11 +357,13 @@ clean_south_africa_data <- clean_south_africa_data %>% mutate(qcae_29.1=recode(q
                                                              `Slightly Agree`="2",
                                                              `Slightly Disagree`="3",
                                                              `Strongly Disagree`="4"))
+# Find numeric scores for each item
 clean_south_africa_data <- clean_south_africa_data %>% mutate_all(funs(str_replace(., "Strongly Disagree", "1")))
 clean_south_africa_data <- clean_south_africa_data %>% mutate_all(funs(str_replace(., "Slightly Disagree", "2")))
 clean_south_africa_data <- clean_south_africa_data %>% mutate_all(funs(str_replace(., "Slightly Agree", "3")))
 clean_south_africa_data <- clean_south_africa_data %>% mutate_all(funs(str_replace(., "Strongly Agree", "4")))
 clean_south_africa_data <- clean_south_africa_data %>% slice(3:n())
+# Calculate subscales 
 clean_south_africa_data <- clean_south_africa_data %>% mutate(child_qcae_pt = as.numeric(qcae_15) + as.numeric(qcae_16) +as.numeric(qcae_19) +
                                               as.numeric(qcae_20) +as.numeric(qcae_21) +as.numeric(qcae_22) +as.numeric(qcae_24) +
                                               as.numeric(qcae_25) + as.numeric(qcae_26) +as.numeric(qcae_27))
@@ -364,9 +381,6 @@ clean_south_africa_data <- clean_south_africa_data %>% mutate(child_qcae_periph_
                                               as.numeric(qcae_29))
 clean_south_africa_data <- clean_south_africa_data %>% mutate(child_qcae_aff = child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r)
 clean_south_africa_data <- clean_south_africa_data %>% mutate(child_qcae_tot = child_qcae_aff+child_qcae_cog)
-
-
-
 clean_south_africa_data <- clean_south_africa_data %>% mutate(parent_qcae_pt = as.numeric(qcae_15.1) + as.numeric(qcae_16.1) +as.numeric(qcae_19.1) +
                                               as.numeric(qcae_20.1) +as.numeric(qcae_21.1) +as.numeric(qcae_22.1) +as.numeric(qcae_24.1) +
                                               as.numeric(qcae_25.1) + as.numeric(qcae_26.1) +as.numeric(qcae_27.1))
@@ -386,7 +400,10 @@ clean_south_africa_data <- clean_south_africa_data %>% mutate(parent_qcae_tot = 
 
 clean_south_africa_data <- clean_south_africa_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff,child_qcae_cog,child_qcae_tot,
                                              parent_qcae_os, parent_qcae_pt, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff,parent_qcae_cog,parent_qcae_tot)
+```
 
+Read, clean, and calculate scores for Turkey data
+``` {r}
 turkey_toddler_data <- read.csv(here("Turkish_3-5years_merged_data_for_chicago_v1.csv"))
 turkey_toddler_data <- tibble(turkey_toddler_data %>% select(ï..id_no, c_emp_1:c_emp_31, m_emp_1:m_emp_31))
 turkey_child_data <- read.csv(here("Turkish_6-12years_merged_data_for_chicago_v1.csv"))
@@ -396,6 +413,7 @@ clean_turkey_data <- turkey_data %>% rename_all(funs(str_replace(., "c_emp", "ch
 clean_turkey_data <- clean_turkey_data %>% rename_all(funs(str_replace(., "m_emp", "parent_qcae"  )))
 clean_turkey_data <- clean_turkey_data %>% rename (unique_id = ï..id_no)
 clean_turkey_data$unique_id <- str_c("turkey_", clean_turkey_data$unique_id)
+# Reverse code (assuming that raw data was not reverse coded and that each number in the raw data aligned with a likert scale value)
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_1=abs(child_qcae_1-5))
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_2=abs(child_qcae_2-5))
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_17=abs(child_qcae_17-5))
@@ -404,6 +422,7 @@ clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_1=abs(parent_qcae_
 clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_2=abs(parent_qcae_2-5))
 clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_17=abs(parent_qcae_17-5))
 clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_29=abs(parent_qcae_29-5))
+# Calculate subscales
 clean_turkey_data <- clean_turkey_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16) +as.numeric(child_qcae_19) +
                                                     as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
                                                     as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
@@ -440,14 +459,16 @@ clean_turkey_data <- clean_turkey_data %>% mutate(parent_qcae_tot = parent_qcae_
 
 clean_turkey_data <- clean_turkey_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
                                                    parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
+```
+Read, clean, and calculate scores for Jordan data
 
+```{r}
 jordan_data <- read.csv(here("jordan qualtrics.csv"))
-
 clean_jordan_data <- jordan_data %>% rename_all(funs(str_replace(., "QCAEchild", "child_qcae"  )))
 clean_jordan_data <- clean_jordan_data %>% rename_all(funs(str_replace(., "QCAEparent", "parent_qcae"  )))
 clean_jordan_data <- clean_jordan_data %>% rename (unique_id = Subject)
 clean_jordan_data$unique_id <- str_c("jordan_", clean_jordan_data$unique_id)
-
+# Reverse code (assumes that numeric values in raw data correspond to likert scale ratings, not item scores)
 clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_1=abs(child_qcae_1-5))
 clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_2=abs(child_qcae_2-5))
 clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_17=abs(child_qcae_17-5))
@@ -456,6 +477,7 @@ clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_1=abs(parent_qcae_
 clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_2=abs(parent_qcae_2-5))
 clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_17=abs(parent_qcae_17-5))
 clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_29=abs(parent_qcae_29-5))
+# Calculate subscale values
 clean_jordan_data <- clean_jordan_data %>% mutate(child_qcae_pt = as.numeric(child_qcae_15) + as.numeric(child_qcae_16) +as.numeric(child_qcae_19) +
                                                     as.numeric(child_qcae_20) +as.numeric(child_qcae_21) +as.numeric(child_qcae_22) +as.numeric(child_qcae_24) +
                                                     as.numeric(child_qcae_25) + as.numeric(child_qcae_26) +as.numeric(child_qcae_27))
@@ -492,35 +514,39 @@ clean_jordan_data <- clean_jordan_data %>% mutate(parent_qcae_tot = parent_qcae_
 
 clean_jordan_data <- clean_jordan_data %>% select (unique_id, child_qcae_os, child_qcae_pt, child_qcae_cog, child_qcae_ec, child_qcae_prox_r, child_qcae_periph_r, child_qcae_aff, child_qcae_tot,
                                                    parent_qcae_os, parent_qcae_pt, parent_qcae_cog, parent_qcae_ec, parent_qcae_prox_r, parent_qcae_periph_r, parent_qcae_aff, parent_qcae_tot)
+```
 
-
-
-
-
+Join all data
+```{r}
 output_data <- full_join(clean_canada_data, clean_china_data)
 output_data <- full_join(output_data, clean_usa_data)
 output_data <- full_join(output_data, clean_south_africa_data)
 output_data <- full_join(output_data, clean_turkey_data)
 output_data <- full_join(output_data, clean_jordan_data)
+```
 
+Clean and write joined data to csv
+```{r}
+# Remove entries with invalid IDs
 output_data <- output_data %>% filter(unique_id != "canada_" & unique_id != "china_" & unique_id != "usa_")
-
-
+# Rename columns
 output_data <- output_data %>% rename("vk_child_qcae_aff" = child_qcae_aff, "vk_child_qcae_cog" = child_qcae_cog, "vk_child_qcae_os" = child_qcae_os,
                                       "vk_child_qcae_pt" = child_qcae_pt, "vk_child_qcae_ec" = child_qcae_ec, "vk_child_qcae_tot" = child_qcae_tot,
                                       "vk_parent_qcae_aff" = parent_qcae_aff, "vk_parent_qcae_cog" = parent_qcae_cog, "vk_parent_qcae_os" = parent_qcae_os,
                                       "vk_parent_qcae_pt" = parent_qcae_pt, "vk_parent_qcae_ec" = parent_qcae_ec, "vk_parent_qcae_tot" = parent_qcae_tot)
 
-
 #Remove any duplicate rows
 output_data <- distinct(output_data)
-
 
 # Uncomment to see any remaining duplicate entries with slightly different values
 # View(output_data %>% add_count(unique_id) %>% filter(n>1))
 
+# Remove duplicate entry with missing values from QCAE data
+output_data <- output_data %>% filter(!(is.na(vk_child_qcae_os) & (unique_id == "china_3021")))
+
+# Remove duplicate entries with conflicting values from QCAE data
+output_data <- output_data %>% filter(!(unique_id == "china_3030"| unique_id == "south_africa_2069" | unique_id == "south_africa_2108" | unique_id == "south_africa_2116" | unique_id == "south_africa_4885"))
 
 write.csv(output_data, here("templeton_qcae_calculations.csv"))
-
 
 ```

@@ -1,0 +1,66 @@
+---
+title: "Combine Data"
+author: "Violet Kozloff"
+date: "June 16, 2020"
+output: html_document
+---
+
+Prepare workspace and read in files
+```{r}
+# install.packages("here", "tidyverse")
+require("here")
+require("tidyverse")
+
+rm(list = ls())
+
+age_data <- as_tibble(read.csv(here("templeton_age_calculations.csv")))
+gender_data <- as_tibble(read.csv(here("templeton_gender_compilation.csv")))
+qcae_data <- as_tibble(read.csv(here("templeton_qcae_calculations.csv")))
+task_data <- as_tibble(read.csv(here("PrimaryCountries_Years1&2_2.csv")))
+```
+
+Clean task data
+```{r}
+clean_task_data <- task_data %>% select(Subject, ï..Country, Empathy_Pain_RESP, Empathy_Sorry_RESP)
+clean_task_data <- clean_task_data %>% mutate(country = recode( ï..Country, `1`="usa",`2`="canada", `3` = "south_africa", `4` = "turkey", `5` ="china", `6` = "kyrgyzstan", `7` = "jordan"))
+clean_task_data <- clean_task_data %>% mutate(unique_id = paste0(country, "_", Subject))
+clean_task_data <- clean_task_data %>% select(-ï..Country, -Subject)
+colnames(clean_task_data) <- tolower(colnames(clean_task_data))
+clean_task_data <- distinct(clean_task_data)
+
+# Remove empty duplicate entries from task data
+clean_task_data <- clean_task_data %>% filter(!(is.na(empathy_pain_resp) & (unique_id == "usa_242" | unique_id == "south_africa_2004" | unique_id == "south_africa_2069" | unique_id == "south_africa_2108" | unique_id == "south_africa_2116" | unique_id == "china_3092")))
+```
+
+Join and clean data
+```{r}
+complete_data <- select(full_join (clean_task_data, gender_data, by = "unique_id"), -X)
+complete_data <- select(full_join (complete_data, qcae_data, by = "unique_id"), -X)
+complete_data <- complete_data %>% filter(!is.na(country))
+complete_data <- full_join(complete_data, age_data, by = "unique_id")
+colnames(complete_data) <- gsub("vk_", "", colnames(complete_data))
+complete_data <- complete_data %>% select(-X)
+```
+Add Hofstede scores and write output to CSV
+```{r}
+# Add hofstede scores for individualism/collectivism and separate countries as individualist/collectivist based on score
+complete_data <- complete_data %>% mutate(individualism = as.numeric((case_when(country=="canada" ~ "80",
+                                                              country=="china" ~ "20",
+                                                              country=="jordan" ~ "30",
+                                                              country=="south_africa" ~ "65",
+                                                              country=="turkey" ~ "37",
+                                                              country=="usa" ~ "91"))))
+complete_data <- complete_data %>% mutate(individualism_split = (case_when(country=="canada" ~ "individualist",
+                                                              country=="china" ~ "collectivist",
+                                                              country=="jordan" ~ "collectivist",
+                                                              country=="south_africa" ~ "individualist",
+                                                              country=="turkey" ~ "collectivist",
+                                                              country=="usa" ~ "individualist")))
+
+# Mean center the responses
+complete_data <- complete_data%>%mutate(empathy_pain_resp_c = empathy_pain_resp-mean(empathy_pain_resp, na.rm = TRUE)) # empathy_pain_resp_c is centered
+complete_data <- complete_data%>%mutate(empathy_sorry_resp_c = empathy_sorry_resp-mean(empathy_sorry_resp, na.rm = TRUE)) # empathy_sorry_resp_c is centered
+
+write.csv(complete_data, "templeton_clean_data.csv")
+
+```

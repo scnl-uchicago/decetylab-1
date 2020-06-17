@@ -1,17 +1,18 @@
 ---
-title: "Age Calculations"
+title: "Extract Gender"
 author: "Violet Kozloff"
 date: "June 8, 2020"
 output: html_document
 ---
 
 ```{r}
-# install.packages("here", "tidyverse")
+install.packages("here", "tidyverse")
 require("here")
 require("tidyverse")
 
 rm(list = ls())
 
+# Read in raw data
 canada_data <- as_tibble(read.csv(here("Master_CA.csv")))
 china_data <- as_tibble(read.csv(here("CCMD_China_2013+2014.csv")))
 jordan_data <- as_tibble(read.csv(here("Master_ Jordan.csv")))
@@ -21,36 +22,43 @@ usa_data_1 <- as_tibble(read.csv(here("Master_US_aug062014_1.csv")))
 usa_data_2 <- as_tibble(read.csv(here("Master_US_aug062014_2.csv")))
 additional_data <- as_tibble(read.csv(here("PrimaryCountries_Years1&2_2.csv")))
 
+
+# Extract Canada genders
 clean_canada_data <- canada_data %>% mutate(unique_id = paste0("canada_", Subject))
 clean_canada_data <- clean_canada_data %>% mutate(gender = tolower(Gender))
 clean_canada_data <- clean_canada_data %>% select(unique_id, gender)
 
+# Extract China genders
 clean_china_data <- china_data %>% mutate(unique_id = paste0("china_", Subject))
 clean_china_data <- clean_china_data %>% mutate(gender = tolower(Gender))
 clean_china_data <- clean_china_data %>% select(unique_id, gender)
 
+# Extract Jordan genders
 clean_jordan_data <- jordan_data %>% mutate(unique_id = paste0("jordan_", Subject))
 clean_jordan_data <- clean_jordan_data %>% mutate(gender = tolower(Gender))
 clean_jordan_data <- clean_jordan_data %>% select(unique_id, gender)
 
+# Extract South Africa genders
 clean_south_africa_data <- south_africa_data %>% mutate(unique_id = paste0("south_africa_", ï..))
 clean_south_africa_data <- clean_south_africa_data %>% mutate(gender = recode(X.1, Female = "f", Male = "m"))
 clean_south_africa_data <- clean_south_africa_data %>% select(unique_id, gender)
 clean_south_africa_data <- clean_south_africa_data %>% slice(2:n())
 
+# Extract Turkey genders
 clean_turkey_data <- turkey_data %>% mutate(unique_id = paste0("turkey_", ï..Subject))
 clean_turkey_data <- clean_turkey_data %>% mutate(gender = recode(Gender, `2` = "f", `1` = "m"))
 clean_turkey_data <- clean_turkey_data %>% select(unique_id, gender)
 
+# Extract USA genders
 clean_usa_data_1 <- usa_data_1 %>% mutate(unique_id = paste0("usa_", ï..subject_number))
 clean_usa_data_1 <- clean_usa_data_1 %>% mutate(gender = tolower(sex))
 clean_usa_data_1 <- clean_usa_data_1 %>% select(unique_id, gender)
-
 clean_usa_data_2 <- usa_data_2 %>% mutate(unique_id = paste0("usa_", ï..Name))
 clean_usa_data_2 <- clean_usa_data_2 %>% mutate(gender = recode(Child.s.Gender, `2` = "f", `1` = "m"))
 clean_usa_data_2 <- clean_usa_data_2 %>% select(unique_id, gender)
 clean_usa_data_2 <- clean_usa_data_2 %>% slice(2:n())
 
+# Combine data across countries
 combined_data <- rbind(clean_canada_data, clean_china_data)
 combined_data <- rbind(combined_data, clean_jordan_data)
 combined_data <- rbind(combined_data, clean_south_africa_data)
@@ -58,6 +66,7 @@ combined_data <- rbind(combined_data, clean_turkey_data)
 combined_data <- rbind(combined_data, clean_usa_data_1)
 combined_data <- rbind(combined_data, clean_usa_data_2)
 
+# Remove entries with invalid IDs
 combined_data <- combined_data %>% filter(unique_id != "canada_NA")
 combined_data <- combined_data %>% filter(unique_id != "china_NA")
 combined_data <- combined_data %>% filter(unique_id != "usa_")
@@ -71,17 +80,22 @@ combined_data <- distinct(combined_data)
 combined_data <- combined_data %>% filter(gender != "" & !is.na(gender) & gender != "??")
 combined_data <- combined_data %>% mutate(gender = str_trim(gender, side = "both"))
 
+# Extract genders from additional data (not country-specific)
+# Use this information to fill in any values not present in country-specific files
+# Note: country-specific files' data prioritized in cases of conflict with additional data
 clean_additional_data <- additional_data %>% mutate(country = recode(ï..Country, `1`="usa",`2`="canada", `3` = "south_africa", `4` = "turkey", `5` = "china", `6` = "kyrgyzstan", `7` = "jordan"))
 clean_additional_data <- clean_additional_data %>% mutate(unique_id = paste0(country, "_", Subject))
-clean_additional_data <- clean_additional_data %>% mutate(backup_gender = str_trim(tolower(as.character(Gender)), side = "both"))
+clean_additional_data <- clean_additional_data %>% mutate(backup_gender = recode(Gender_Code, `2` = "f", `1` = "m"))
 clean_additional_data <- clean_additional_data %>% select(unique_id, backup_gender)
-clean_additional_data <- clean_additional_data %>% filter(backup_gender != "")
+clean_additional_data <- clean_additional_data %>% filter(!is.na(backup_gender))
 clean_additional_data <- distinct(clean_additional_data)
 
+# Join data
 output_data <- full_join (combined_data, clean_additional_data, by = "unique_id")
-output_data <- output_data %>% mutate(gender = ifelse(is.na(gender), backup_gender, gender))
-output_data <- output_data %>% select (-backup_gender)
+output_data <- output_data %>% mutate(vk_gender = ifelse(is.na(gender), backup_gender, gender))
+output_data <- output_data %>% select (unique_id, vk_gender)
 
-write.csv(combined_data, "templeton_gender_compilation.csv")
+# Write data
+write.csv(output_data, "templeton_gender_compilation.csv")
 
 ```
